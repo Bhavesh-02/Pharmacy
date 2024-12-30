@@ -1,0 +1,92 @@
+
+
+
+
+.accordion {
+  width: 100%;
+  max-width: 470px;
+  background-color: white; /* White background */
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 5px; /* Optional: rounded corners */
+}
+
+.accordion h2 {
+  padding: 15px 20px;
+  font-size: 20px;
+  font-weight: 500;
+  color: black; /* Black text color */
+  background-color: white; /* White background */
+  margin: 0;
+  border: 1px solid rgba(0, 0, 0, 0.15);}
+
+.panel {
+  background-color: white; /* White background */
+}
+
+.panel__label {
+  position: relative;
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 5% 60px 5% 25px;
+  font-weight: 500;
+  font-size: 100%;
+  font-family: inherit;
+  cursor: pointer;
+  color: black; /* Black text color */
+  border-bottom: 1px dotted rgba(0, 0, 0, 0.15);
+
+}
+
+.panel__label:focus {
+  outline: none;
+}
+
+.panel__label:after,
+.panel__label:before {
+  content: '';
+  position: absolute;
+  right: 25px;
+  top: 50%;
+  width: 22px;
+  height: 2px;
+  margin-top: -2px;
+  background-color: black; /* Black color for arrows */
+}
+
+.panel__label:before {
+  transform: rotate(-90deg);
+  transition: transform 0.35s cubic-bezier(0.65, 0.05, 0.36, 1);
+}
+
+.panel[aria-expanded='true'] .panel__content {
+  opacity: 1;
+}
+
+.panel[aria-expanded='true'] .panel__label {
+  color: black; /* Black text color for active state */
+}
+
+.panel[aria-expanded='true'] .panel__label:before {
+  transform: rotate(0deg);
+}
+
+.panel__inner {
+  overflow: hidden;
+  will-change: height;
+  transition: height 0.4s cubic-bezier(0.65, 0.05, 0.36, 1);
+}
+
+.panel__content {
+  margin: 5px 25px 25px;
+  font-size: 14px;
+  color: black; /* Black text color */
+  opacity: 0;
+  transition: opacity 0.3s linear 0.18s;
+}
+
+.panel:not(:last-child) {
+  margin-bottom: 3px;
+}

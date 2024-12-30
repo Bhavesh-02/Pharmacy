@@ -9,7 +9,7 @@ function Footer() {
           <Col>
               <Card style={{ border: "none", color: "#FFF" }}>
                   <Card.Body className='footer-card'>
-                      <Card.Title style={{ fontSize: "40px", color: "#EE3137" }}>Pharmacist</Card.Title>
+                     <div style={{fontSize:"40px"}}> <Card.Title style={{ fontSize: "45px", color: "#EE3137" }}>Pharmacist</Card.Title></div>
                       <Card.Text>
                           <p style={{ fontSize: "85%", marginTop: "15%", fontWeight: "500" }}>
                               Our goal is to create an easy-to-use medical store website where people can buy medicines online.

@@ -1,66 +1,67 @@
 import React from 'react';
 import { Row, Col, Card, Button, Dropdown} from 'react-bootstrap';
-import { Accordion,AccordionContext } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
+import { useState, useEffect } from 'react';
+import './Accordion.css'; 
+import Pagination from 'react-bootstrap/Pagination';
 
 
-const CustomToggle = ({ children, eventKey }) => {
-  const { activeEventKey } = React.useContext(AccordionContext);
-  const isActive = activeEventKey === eventKey;
-  const icon = isActive ? faMinus : faPlus;
+const Panel = ({ label, content, activeTab, index, activateTab }) => {
+  const [height, setHeight] = useState(0);
+  const panelRef = React.useRef(null);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (panelRef.current) {
+        setHeight(panelRef.current.scrollHeight);
+      }
+    }, 333);
+  }, []);
+
+  const isActive = activeTab === index;
+  const innerStyle = {
+    height: `${isActive ? height : 0}px`
+  };
   return (
-    <Button variant="link" className="custom-toggle">
-      <FontAwesomeIcon icon={icon} className="mr-2" />
-      {children}
-    </Button>
+    <div className="panel" role="tabpanel" aria-expanded={isActive}>
+      <button className="panel__label" role="tab" onClick={() => activateTab(index)}>
+        {label}
+      </button>
+      <div className="panel__inner" style={innerStyle} aria-hidden={!isActive} ref={panelRef}>
+        <p className="panel__content">{content}</p>
+      </div>
+    </div>
   );
 };
 
-const FilterAccordion = () => (
-  <Accordion defaultActiveKey="0">
-    <Card>
-      <Card.Header>
-        <CustomToggle eventKey="0">FILTER BY</CustomToggle>
-      </Card.Header>
-      <Accordion.Collapse eventKey="0">
-        <Card.Body>
-          <Accordion>
-            <Card>
-              <Card.Header>
-                <CustomToggle eventKey="1">Category</CustomToggle>
-              </Card.Header>
-              <Accordion.Collapse eventKey="1">
-                <Card.Body>
-                  <ul>
-                    <li>Health</li>
-                    <li>Supplements</li>
-                    <li>Fitness</li>
-                  </ul>
-                </Card.Body>
-              </Accordion.Collapse>
-            </Card>
+const Accordion = ({ panels }) => {
+  const [activeTab, setActiveTab] = useState(0);
 
-            <Card>
-              <Card.Header>
-                <CustomToggle eventKey="2">Brand</CustomToggle>
-              </Card.Header>
-              <Accordion.Collapse eventKey="2">
-                <Card.Body>
-                  <ul>
-                    <li>Brand A</li>
-                    <li>Brand B</li>
-                    <li>Brand C</li>
-                  </ul>
-                </Card.Body>
-              </Accordion.Collapse>
-            </Card>
-          </Accordion>
-        </Card.Body>
-      </Accordion.Collapse>
-    </Card>
-  </Accordion>
-);
+  const activateTab = (index) => {
+    setActiveTab(prev => (prev === index ? -1 : index));
+  };
+
+  return (
+    <div className="accordion" role="tablist">
+      <h2>FILTER BY</h2> 
+      {panels.map((panel, index) => (
+        <Panel
+          key={index}
+          activeTab={activeTab}
+          index={index}
+          label={panel.label}
+          content={panel.content}
+          activateTab={activateTab}
+        />
+      ))}
+    </div>
+  );
+};
+
+const panels = [
+  { label: 'Category', content: 'Skin Care' },
+  { label: 'Brands', content: 'Nivea' },
+];
+
 
 
 const ProductCard = ({ imgSrc, title, price, oldPrice, discount }) => (
@@ -164,13 +165,29 @@ const Product = () => {
         </div>
       </div>
       <div style={{display:"flex"}}>
-          <div style={{width:"30%"}}>
-          <FilterAccordion />
+          <div style={{width:"30%", paddingRight:"2%"}}>
+          <Accordion panels={panels} />
           </div>
           <div style={{width:"70%"}}>
             <ProductCardsGrid />
+            <Pagination>
+      <Pagination.Prev className='pages-item' />
+      <Pagination.Item className='page-item' active>{1}</Pagination.Item>
+      <Pagination.Item className='pages-item'>{2}</Pagination.Item>
+      <Pagination.Item className='pages-item'>{3}</Pagination.Item>
+      <Pagination.Item className='pages-item'>{4}</Pagination.Item>
+      <Pagination.Item className='pages-item'>{5}</Pagination.Item>
+      <Pagination.Item className='pages-item'>{6}</Pagination.Item>
+      <Pagination.Item className='pages-item'>{7}</Pagination.Item>
+      <Pagination.Ellipsis className='pages-item' />
+      <Pagination.Item className='pages-item'>{20}</Pagination.Item>
+      <Pagination.Next className='pages-item'/>
+    </Pagination>
           </div>
       </div>
+
+ 
+
     </div>
   );
 };

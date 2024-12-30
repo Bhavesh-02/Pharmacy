@@ -1,6 +1,41 @@
 import Button from 'react-bootstrap/Button';
+import { Formik, Field, Form } from 'formik';
 
 function Registration(){
+  const initialValues = {
+    name: '',
+    phoneNumber: '',
+    email: '',
+    password: ''
+  };
+   const handleSubmit = async (values)  => {
+    try {
+      const apiUrl = `http://192.168.0.118:5500/api/register`;
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values), 
+      });
+
+      if (!response.ok) {
+        throw new Error('Something went wrong');
+      }
+
+      const data = await response.json();
+
+      console.log('Registration successful:', data);
+      alert('Registration successful!');
+
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Registration failed. Please try again.');
+    }
+  };
+
+
     return(
     <section >
       <div style={{textAlign:"center", fontSize:"2.2rem", fontWeight:"401", color:"red", padding:"3% 0%"}}>Pharmacist</div>
@@ -16,6 +51,12 @@ function Registration(){
       </div>
       <div  style={{backgroundColor:"#F9F9F9", padding:"2%", paddingBottom:"10%", marginBottom:"3%"}} class="col-md-7 col-lg-5 col-xl-5 offset-xl-1 ">
         <div style={{fontSize:"2rem", color:"red", fontWeight:"600", marginBottom:"3%"}}>Sign Up</div>
+        <Formik
+              initialValues={initialValues} // Initial values for the form fields
+              onSubmit={handleSubmit} // Form submission handler
+            >
+
+
         <form> 
 
           <div data-mdb-input-init class="form-outline mb-2">
@@ -55,6 +96,7 @@ function Registration(){
           </div>
          
         </form>
+        </Formik>
       </div>
     </div>
   </div>

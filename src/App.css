@@ -354,3 +354,20 @@
   border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
+.pagination{
+  justify-content: center;
+  color: black !important;
+  background-color: white !important;
+
+}
+
+.page-item{
+padding: 0.5%;
+}
+
+.page-link{
+  background-color: white !important;
+  color: #000000 !important;
+  border-radius: 20%;
+}
+
