@@ -251,17 +251,19 @@
 .card-title{
   font-size: inherit !important;
   height: 30%;
+  padding-bottom: 8%;
+  height: 60px;
 }
 
 .card-text{
   height: 20%;
-  padding: 5px;
+  
 }
 
 .addcart-button{
   background-color: #30B09B !important;
   padding: var(--bs-btn-padding-y) 25% !important;
-  font-size: 80% !important;
+  font-size: 75% !important;
   font-weight: 500 !important;
   border: none !important;
   
@@ -370,4 +372,9 @@ padding: 0.5%;
   color: #000000 !important;
   border-radius: 20%;
 }
+
+.filter-heading{
+  font-size: 25px;
+  font-weight: 500;
+  }
 

@@ -1,210 +1,161 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Button, Dropdown } from 'react-bootstrap';
-import Pagination from 'react-bootstrap/Pagination';
-import './Accordion.css';
+import React, { useEffect, useState } from "react";
+import { Accordion, Col, Container, Dropdown, Row, Card, Button } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";  
+import { fetchProducts } from "../../redux/productsSlice";
+import { fetchCategories } from "../../redux/categoriesSlice";
+import { fetchBrands } from "../../redux/brandsSlice";  
 
+const Product = () => {  
+  const dispatch = useDispatch();
 
-/* http://192.168.0.118:5500/api/products*/
-const Panel = ({ label, content, activeTab, index, activateTab, selectedItems, onCheckboxChange }) => {
-  const [height, setHeight] = useState(0);
-  const panelRef = React.useRef(null);
+  const products = useSelector(state => state.products.products);
+  const categories = useSelector(state => state.categories.categories);
+  const brands = useSelector(state => state.brands.brands);
+
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedBrands, setSelectedBrands] = useState([]);
 
   useEffect(() => {
-    setTimeout(() => {
-      if (panelRef.current) {
-        setHeight(panelRef.current.scrollHeight);
-      }
-    }, 333);
-  }, []);
+    dispatch(fetchProducts());
+    dispatch(fetchCategories());
+    dispatch(fetchBrands());
+  }, [dispatch]);
 
-  const isActive = activeTab === index;
-  const innerStyle = {
-    height: `${isActive ? height : 0}px`
+  useEffect(() => {
+    console.log("Fetched Products: ", products);
+    console.log("Fetched Categories: ", categories);
+    console.log("Fetched Brands: ", brands);
+  }, [products, categories, brands]);
+
+  const handleCategoryChange = (event) => {
+    const category = event.target.value;
+    setSelectedCategories((prev) =>
+      prev.includes(category) ? prev.filter((item) => item !== category) : [...prev, category]
+    );
   };
 
-  const items = content.split(',').map(item => item.trim()); 
-  return (
-    <div className="panel" role="tabpanel" aria-expanded={isActive}>
-      <button className="panel__label" role="tab" onClick={() => activateTab(index)}>
-        {label}
-      </button>
-      <div className="panel__inner" style={innerStyle} aria-hidden={!isActive} ref={panelRef}>
-        <div className="panel__content">
-          {items.map((item, i) => (
-            <label key={i} style={{ display: 'block' }}>
-              <input
-                type="checkbox"
-                checked={selectedItems[label]?.includes(item)}
-                onChange={(e) => onCheckboxChange(label, item, e.target.checked)}
-              />
-              {item}
-            </label>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-
-const Accordion = ({ panels, selectedItems, onCheckboxChange }) => {
-  const [activeTab, setActiveTab] = useState(0);
-
-  const activateTab = (index) => {
-    setActiveTab(prev => (prev === index ? -1 : index));
+  const handleBrandChange = (event) => {
+    const brand = event.target.value;
+    setSelectedBrands((prev) =>
+      prev.includes(brand) ? prev.filter((item) => item !== brand) : [...prev, brand]
+    );
   };
 
-  return (
-    <div className="accordion" role="tablist">
-      <h2>FILTER BY</h2>
-      {panels.map((panel, index) => (
-        <Panel
-          key={index}
-          activeTab={activeTab}
-          index={index}
-          label={panel.label}
-          content={panel.content}
-          activateTab={activateTab}
-          selectedItems={selectedItems}
-          onCheckboxChange={onCheckboxChange}
-        />
-      ))}
-    </div>
-  );
-};
+  const filteredProducts = products.filter((product) => {
+    const categoryMatches =
+      selectedCategories.length === 0 || selectedCategories.includes(product.productCategory.name);
 
-const ProductCard = ({ imgSrc, title, price, oldPrice, discount }) => (
-  <Card style={{ width: '100%', border: '1px solid rgba(0, 0, 0, 0.10)' }}>
-    <Card.Img variant="top" src={imgSrc} />
-    <Card.Body>
-      <Card.Title>{title}</Card.Title>
-      <Card.Text>
-        <p>₹{price} <strike>(₹{oldPrice})</strike> <span>{discount}% off</span></p>
-      </Card.Text>
-      <Button className="addcart-button" variant="primary">ADD TO CART</Button>
-    </Card.Body>
-  </Card>
-);
+    const brandMatches =
+      selectedBrands.length === 0 || selectedBrands.includes(product.brand.name);
 
-const ProductCardsGrid = () => {
-  const products = [
-    { imgSrc: "images/Product1.png", title: "Neurobion Forte Tablet 30's", price: "36.5", oldPrice: "41.5", discount: 12 },
-    { imgSrc: "images/Product2.png", title: "Sevenseas Original Cod-Liver Oil 300 mg...", price: "386", oldPrice: "386", discount: 0 },
-    { imgSrc: "images/Product3.png", title: "Livogen Adult Tonic 200 ml", price: "167.2", oldPrice: "190", discount: 12 },
-    { imgSrc: "images/Product4.png", title: "Evion 200 Capsule 10's", price: "20.2", oldPrice: "23", discount: 12 },
-    { imgSrc: "images/Product5.png", title: "Apollo Pharmacy Smart Blood Glucose...", price: "799", oldPrice: "799", discount: 0 },
-    { imgSrc: "images/Product6.png", title: "Apollo Pharmacy Blood Glucose Test Strips...", price: "719.10", oldPrice: "799", discount: 10  },
-    { imgSrc: "images/Product7.png", title: "Apollo Essentials ExtraAbsorb Baby Diaper...", price: "1199", oldPrice: "1199", discount: 0 },
-    { imgSrc: "images/Product8.png", title: "Apollo Essentials Extra Absorb Baby Diaper...", price: "1199", oldPrice: "1199", discount: 0},
-    { imgSrc: "images/Product9.png", title: "Apollo Pharmacy PremiumAqua Blue Handwash", price: "100", oldPrice: "160", discount: 38 },
-    { imgSrc: "images/Product10.png", title: "Apollo Essentials ExtraAbsorb Baby Diaper...", price: "1199", oldPrice: "1199", discount: 0 },
-    { imgSrc: "images/Product11.png", title: "Apollo Pharmacy Vitamin D3 60000 IU, 4 Capsules", price: "90", oldPrice: "100", discount: 10 },
-    { imgSrc: "images/Product12.png", title: "Apollo Essentials Extra Absorb Baby Diaper...", price: "1199", oldPrice: "1199", discount: 0  },
-    { imgSrc: "images/Product13.png", title: "Apollo Life Omega-3 Fish Oil 1000mg", price: "180", oldPrice: "200.0", discount: 10 },
-    { imgSrc: "images/Product14.png", title: "Apollo Pharmacy First Aid Kit, 1 Count", price: "450", oldPrice: "500", discount: 10 },
-    { imgSrc: "images/Product15.png", title: "Apollo Pharmacy Non-Contact Infrared...", price: "990", oldPrice: "1100", discount: 10 },
-    { imgSrc: "images/Product16.png", title: "Apollo Life Anti-Bac Wet Wipes, 60 Count...", price: "125", oldPrice: "200.0", discount: 38 },
-    { imgSrc: "images/Product17.png", title: "Apollo Pharmacy Blood Pressure Monitor...", price: "1619", oldPrice: "1799", discount: 10 },
-    { imgSrc: "images/Product18.png", title: "Apollo Pharmacy Blood Pressure Monitor...", price: "1619", oldPrice: "1799", discount: 10 },
-    { imgSrc: "images/Product19.png", title: "Apollo Pharmacy Steam Inhaler Vaporizer, 1 Count", price: "360", oldPrice: "400", discount: 10 },
-    { imgSrc: "images/Product20.png", title: "Apollo Pharmacy ORSOrange Flavour Drink", price: "100", oldPrice: "120.0", discount: 17 },
-  ];
-
-  const cardRows = Array.from({ length: 6 }).map((_, rowIndex) => (
-    <Row key={rowIndex} className="mb-4">
-      {products.slice(rowIndex * 4, rowIndex * 4 + 4).map((product, cardIndex) => (
-        <Col key={cardIndex} xs={12} sm={6} md={3}>
-          <ProductCard
-            imgSrc={product.imgSrc}
-            title={product.title}
-            price={product.price}
-            oldPrice={product.oldPrice}
-            discount={product.discount}
-          />
-        </Col>
-      ))}
-    </Row>
-  ));
-
-  return <>{cardRows}</>;
-};
-
-const Product = () => {
-  const [selectedItems, setSelectedItems] = useState({
-    'Category': [],
-    'Brands': []
+    return categoryMatches && brandMatches;
   });
 
-  const categories = ['Skin Care', 'Health Devices', 'Baby Care', 'Personal Care'];
-  const brands = ['Nivea', 'Evion', 'Sevenseas', 'Apollo Pharmacy'];
-
-  const handleCheckboxChange = (panelLabel, item, isChecked) => {
-    setSelectedItems(prevState => {
-      const updatedItems = isChecked
-        ? [...prevState[panelLabel], item]
-        : prevState[panelLabel].filter(i => i !== item);
-
-      return {
-        ...prevState,
-        [panelLabel]: updatedItems
-      };
-    });
-  };
-
-  const panels = [
-    { label: 'Category', content: categories.join(', ') },
-    { label: 'Brands', content: brands.join(', ') },
-  ];
+  useEffect(() => {
+    console.log("Filtered Products: ", filteredProducts);
+  }, [filteredProducts]);
 
   return (
-    <div style={{ padding: '1% 5%' }}>
-      <div>
-        Home{' '}
-        <svg width="8" height="15" viewBox="0 0 8 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M1.53249 4.11289L2.19562 3.45039L5.80749 7.06102C5.86571 7.11887 5.91192 7.18767 5.94345 7.26345C5.97498 7.33923 5.99121 7.4205 5.99121 7.50258C5.99121 7.58466 5.97498 7.66593 5.94345 7.74171C5.91192 7.81749 5.86571 7.88629 5.80749 7.94414L2.19562 11.5566L1.53312 10.8941L4.92312 7.50352L1.53249 4.11289Z"
-            fill="black"
-          />
-        </svg>{' '}
-        Products
-      </div>
-      <div style={{ padding: '2% 0%', display: 'flex', justifyContent: 'space-between' }}>
-        <div style={{ fontSize: '2rem', fontWeight: '600' }}>All Products</div>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          Sort By:{' '}
-          <Dropdown className="product-dropdown">
-            <Dropdown.Toggle variant="none">Relevant</Dropdown.Toggle>
+    <Container style={{ padding: "1% 0%" }}>
+      <Row>
+        <Col className="mt-3 position-relative" style={{ display: "flex", justifyContent: "space-between" }}>
+          <h3 className="">All Products</h3>
+          <Dropdown className="short-by-drop">
+            <Dropdown.Toggle id="dropdown-basic" className="bg-white text-black border-black">
+              Relevance
+            </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-              <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-              <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+              <Dropdown.Item href="#/action-1">Relevance</Dropdown.Item>
+              <Dropdown.Item href="#/action-2">Relevance</Dropdown.Item>
+              <Dropdown.Item href="#/action-3">Relevance</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
-        </div>
-      </div>
-      <div style={{ display: 'flex' }}>
-        <div style={{ width: '30%', paddingRight: '2%' }}>
-          <Accordion panels={panels} selectedItems={selectedItems} onCheckboxChange={handleCheckboxChange} />
-        </div>
-        <div style={{ width: '70%' }}>
-          <ProductCardsGrid />
-          <Pagination>
-            <Pagination.Prev className="pages-item" />
-            <Pagination.Item className="page-item" active>{1}</Pagination.Item>
-            <Pagination.Item className="pages-item">{2}</Pagination.Item>
-            <Pagination.Item className="pages-item">{3}</Pagination.Item>
-            <Pagination.Item className="pages-item">{4}</Pagination.Item>
-            <Pagination.Item className="pages-item">{5}</Pagination.Item>
-            <Pagination.Item className="pages-item">{6}</Pagination.Item>
-            <Pagination.Item className="pages-item">{7}</Pagination.Item>
-            <Pagination.Ellipsis className="pages-item" />
-            <Pagination.Item className="pages-item">{20}</Pagination.Item>
-            <Pagination.Next className="pages-item" />
-          </Pagination>
-        </div>
-      </div>
-    </div>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col xs={4} className="mt-5">
+          <Accordion defaultActiveKey="0" className="border mb-5">
+            <div className="filter-heading">Filter By</div>
+            <Accordion.Item eventKey="0" className="mt-4">
+              <Accordion.Header>Category</Accordion.Header>
+              {categories.map((category, i) => (
+                <Accordion.Body key={i}>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      value={category.name}
+                      id={`category-${i}`}
+                      onChange={handleCategoryChange}
+                      checked={selectedCategories.includes(category.name)}
+                    />
+                    <label className="form-check-label" htmlFor={`category-${i}`}>
+                      {category.name}
+                    </label>
+                  </div>
+                </Accordion.Body>
+              ))}
+            </Accordion.Item>
+
+            <Accordion.Item eventKey="1">
+              <Accordion.Header>Brands</Accordion.Header>
+              {brands.map((brand, i) => (
+                <Accordion.Body key={i}>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      value={brand.name}
+                      id={`brand-${i}`}
+                      onChange={handleBrandChange}
+                      checked={selectedBrands.includes(brand.name)}
+                    />
+                    <label className="form-check-label" htmlFor={`brand-${i}`}>
+                      {brand.name}
+                    </label>
+                  </div>
+                </Accordion.Body>
+              ))}
+            </Accordion.Item>
+          </Accordion>
+        </Col>
+
+        <Col xs={8} className="ml-3">
+          <Row className="mt-5">
+            {filteredProducts.length === 0 ? (
+              <p>No products match your filter criteria.</p>
+            ) : (
+              filteredProducts.map((product, i) => (
+                <Col key={i} className="col-md-3 col-sm-1 mb-3">
+                  <Card className="product-card" style={{ width: "110%", border: "1px solid rgba(0, 0, 0, 0.10)" }}>
+                    <Card.Img
+                      variant="top"
+                      src={product.mediaFiles[0]?.url}
+                      style={{ height: "200px", width: "100%", objectFit: "cover" }}
+                    />
+                    <Card.Body>
+                      <Card.Title>{product.title}</Card.Title>
+                      <Card.Text>
+                        <p>
+                          ₹{product.variant[0]?.price}{" "}
+                          <strike>₹{product.actualprice}</strike>{" "}
+                          <span>{product.offpercent}% off</span>
+                        </p>
+                      </Card.Text>
+                      <Button className="addcart-button" variant="primary">
+                        ADD TO CART
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))
+            )}
+          </Row>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
-export default Product;
+export default Product;  
