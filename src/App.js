@@ -7,6 +7,7 @@ import Footer from './Layout/Footer/Footer'
 import { BrowserRouter, Route, Routes } from 'react-router';
 import Login from './Layout/User/Login';
 import Registration from './Layout/User/Registration';
+import Cart from './Layout/MyCart/Cart';
 import Product from './Layout/Product/Product';
 
 
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="login" element={<Login />} />
           <Route path="registration" element={<Registration />} />
+          <Route path="cart" element={<Cart />} />
           <Route path="product" element={<Product />} />
         </Routes>
       </BrowserRouter>

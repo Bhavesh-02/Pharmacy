@@ -14,6 +14,7 @@ const Product = () => {
 
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedBrands, setSelectedBrands] = useState([]);
+  const [cart, setCart] = useState([]);
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -22,6 +23,14 @@ const Product = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    const savedCart = JSON.parse(localStorage.getItem("cart"));
+    if (savedCart) {
+      setCart(savedCart);  
+    }
+  }, []);
+  
+
+   useEffect(() => {
     console.log("Fetched Products: ", products);
     console.log("Fetched Categories: ", categories);
     console.log("Fetched Brands: ", brands);
@@ -54,6 +63,26 @@ const Product = () => {
   useEffect(() => {
     console.log("Filtered Products: ", filteredProducts);
   }, [filteredProducts]);
+
+  const handleAddToCart = (product) => {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const existingItemIndex = cart.findIndex((cartItem) => cartItem.id === product.id);
+    let updatedCart;
+
+    if (existingItemIndex > 0) {
+      updatedCart = cart.map((cartItem) =>
+        cartItem.id === product.id ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem
+      );
+    } else {
+      updatedCart = [...cart, { ...product, quantity: 1 }];
+    }
+
+    setCart(updatedCart);
+
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+    console.log("Updated Cart:", updatedCart);
+  };
 
   return (
     <Container style={{ padding: "1% 0%" }}>
@@ -143,7 +172,7 @@ const Product = () => {
                           <span>{product.offpercent}% off</span>
                         </p>
                       </Card.Text>
-                      <Button className="addcart-button" variant="primary">
+                      <Button className="addcart-button" variant="primary" onClick={() => handleAddToCart(product)}>
                         ADD TO CART
                       </Button>
                     </Card.Body>

@@ -15,7 +15,7 @@ function MainHeader() {
             <Nav.Link className='nav-txt' href="#action2"> LOYALTY PROGRAM</Nav.Link>
             <Nav.Link className='nav-txt' href="#action2">  OREDER TRACKING</Nav.Link>
             </div>
-          <button className='cart-button'><img className='Header-image' src='/images/cart.png' alt='cart'/><p className='button-txt'> My Cart </p>
+          <button className='cart-button'><img className='Header-image' src='/images/cart.png' alt='cart'/><p className='button-txt'> <a href='Cart' style={{textDecoration:"none", color:"white"}}>My Cart</a> </p>
           </button>
       </Container>
       <Row style={{ width:"100%", margin:"0%"}}>

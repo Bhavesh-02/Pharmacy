@@ -378,3 +378,81 @@ padding: 0.5%;
   font-weight: 500;
   }
 
+  .lb-addcart-button{
+    background-color: #30B09B !important;
+    font-size: 73% !important;
+    font-weight: 500 !important;
+    border: none !important;
+    
+  }
+
+  .cart-discount{
+    background-color: rgb(1, 121, 42);
+    color: white;
+    object-fit: contain;
+    width: 11%;
+    font-weight: 500;
+    padding: 0.5%;
+    font-size: smaller;
+    border-radius: 10%;
+    margin-top: 1.5%;
+    text-align: center;
+  }
+
+  .item-count{
+    display: flex;
+    width: 15%;
+    font-size: smaller;
+    height: 30px;
+  }
+
+  .item-box{
+    margin: 0;
+    border:1px solid rgba(0, 0, 0, 0.15);
+    width: 33%;
+    padding: 0%;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
+
+  .coupon-NA{
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(242, 251, 251, 1);
+    height: 30px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    margin: 0px;  
+  }
+
+  .coupon-apply{
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    color: rgba(1, 121, 42, 1);
+    background-color: rgba(242, 251, 251, 1);
+    height: 30px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    margin: 0px;
+}
+
+h5 {
+  margin: 0 !important;
+}
+
+.cart-breakdown{
+  display: flex;
+  justify-content: space-between;
+  font-weight: 400;
+  
+}
+
+.saved-header{
+  background-color: rgba(4, 94, 85, 1);
+  text-align: center;
+  color: white;
+  font-weight: 500;
+  padding: 3%;
+}
