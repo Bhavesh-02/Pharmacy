@@ -66,12 +66,12 @@ const Product = () => {
 
   const handleAddToCart = (product) => {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existingItemIndex = cart.findIndex((cartItem) => cartItem.id === product.id);
+    const existingItemIndex = cart.findIndex((cartItem) => cartItem._id === product._id);
     let updatedCart;
 
-    if (existingItemIndex > 0) {
+    if (existingItemIndex >= 0) {
       updatedCart = cart.map((cartItem) =>
-        cartItem.id === product.id ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem
+        cartItem._id === product._id ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem
       );
     } else {
       updatedCart = [...cart, { ...product, quantity: 1 }];

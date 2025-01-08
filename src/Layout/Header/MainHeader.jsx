@@ -2,8 +2,37 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/esm/Row';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import React, { useState, useEffect } from "react";
 
 function MainHeader() {
+
+  const [totalQuantity, setTotalQuantity] = useState(0);
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  
+  const updateCartQuantity = () => {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const totalQuantity = cart.reduce((acc, item) => acc + item.quantity, 0);
+    setTotalQuantity(totalQuantity);
+  };
+
+  useEffect(() => {
+    updateCartQuantity();  // Initialize the quantity when the component mounts
+
+    // Listen for changes in localStorage to update the quantity
+    const handleStorageChange = () => {
+      updateCartQuantity();
+    };
+
+    // Add event listener for 'storage' event to listen to changes in localStorage
+    window.addEventListener('storage', handleStorageChange);
+
+    // Clean up the event listener when component unmounts
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+   
+  }, []);
+
     return (
     <Navbar style={{padding:"0%", flexWrap:"wrap"}}>
           <Container fluid style={{justifyContent:"center"}}>
@@ -15,7 +44,19 @@ function MainHeader() {
             <Nav.Link className='nav-txt' href="#action2"> LOYALTY PROGRAM</Nav.Link>
             <Nav.Link className='nav-txt' href="#action2">  OREDER TRACKING</Nav.Link>
             </div>
-          <button className='cart-button'><img className='Header-image' src='/images/cart.png' alt='cart'/><p className='button-txt'> <a href='Cart' style={{textDecoration:"none", color:"white"}}>My Cart</a> </p>
+            <button className="cart-button  position-relative">
+            <img className="Header-image" src="/images/cart.png" alt="cart" />
+            <p className="button-txt">
+            <a href='/cart' style={{ textDecoration: "none", color: "white" }}>
+             My Cart
+            </a>
+            </p>
+            {totalQuantity > 0 && (
+              <span className="badge rounded-circle bg-danger position-absolute" 
+                    style={{ top: "-10px", right: "-10px", fontSize: "12px", padding: "5px 10px" }}>
+                {totalQuantity}
+              </span>
+            )}
           </button>
       </Container>
       <Row style={{ width:"100%", margin:"0%"}}>

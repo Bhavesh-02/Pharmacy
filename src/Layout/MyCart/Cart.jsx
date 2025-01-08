@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Accordion, Col, Container, Dropdown, Row, Card, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";  
 import { fetchProducts } from "../../redux/productsSlice";
 import { fetchCategories } from "../../redux/categoriesSlice";
@@ -8,6 +9,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import CardGroup from 'react-bootstrap/CardGroup';
+
+
 
 const SamplePrevArrow = (props) => {
   const { className, style, onClick } = props;
@@ -41,6 +44,43 @@ const SamplePrevArrow = (props) => {
 
 
 function Cart(){
+
+  const [cart, setCart] = useState([]);
+
+  useEffect(() => {
+    const savedCart = JSON.parse(localStorage.getItem("cart"));
+    if (savedCart) {
+      setCart(savedCart);
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log("Cart Products: ", cart);
+  }, [cart]);
+
+  const handleIncrement = (productId) => {
+    const updatedCart = cart.map((item) =>
+      item._id === productId ? { ...item, quantity: item.quantity + 1 } : item
+    );
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
+
+  const handleDecrement = (productId) => {
+    const updatedCart = cart.map((item) =>
+      item._id === productId && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item
+    );
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
+
+  const handleRemoveItem = (productId) => {
+    const updatedCart = cart.filter((item) => item._id !== productId);
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
+
+  const totalQuantity = cart.reduce((acc, item) => acc + item.quantity, 0);
    
     
       return (
@@ -61,9 +101,11 @@ function Cart(){
                 <div >
                   <div style={{display:"flex" ,justifyContent:"space-between", width:"100%",padding:"3% 0%"}}>  
                     <div>
-                    <h5>ITEMS(S) IN YOUR CART (2)</h5>
+                    <h5>ITEMS(S) IN YOUR CART ({totalQuantity})</h5>
                     </div> 
+                    <Link to="/product">
                     <button style={{border:"none", backgroundColor:"white"}}><p className='button-txt'> <a href='Cart' style={{textDecoration:"none", color:"#045E55"}}>ADD ITEMS</a></p></button>
+                    </Link>
                   </div>
                 </div>
 
@@ -76,11 +118,69 @@ function Cart(){
                     <button style={{border:"none", backgroundColor:"white"}}><p className='button-txt'> <a href='Cart' style={{textDecoration:"none", color:"#045E55"}}>Arriving 26 Aug '24, by 11:30 PM</a></p></button>
                   </div>
                 </div>
-                <div style={{ display:"flex", padding:"2%"}}><div>
+                <div style={{ border: "1px solid rgba(0, 0, 0, 0.15)" }}>
+            {cart.length === 0 ? (
+              <p style={{textAlign:"center", fontWeight:"500"}} >Nothing To Display Here!!! <Link to="/product"> <button style={{border:"none", backgroundColor:"white", color:"rgba(48, 176, 155, 1)"}}>Shop Now</button></Link> </p>
+            ) : (
+              cart.map((item) => (
+                <div key={item._id} style={{ display: "flex", padding: "2%" }}>
+                  <div>
+                    <img
+                      src={item.mediaFiles[0]?.url}
+                      alt={item.title}
+                      style={{ width: "100px", height: "100px" }}
+                    />
+                  </div>
+                  <div style={{ display: "block", width: "100%", padding: "1%", paddingLeft: "3%" }}>
+                    <p style={{ display: "flex", justifyContent: "space-between", margin: "0px" }}>
+                      <p style={{ margin: "0px", fontWeight: "500" }}>{item.title}</p>
+                      <span>
+                        <button
+                          style={{ border: "none", backgroundColor: "white" }}
+                          onClick={() => handleRemoveItem(item._id)}
+                        >
+                          <img src="images/cross.png" alt="Remove" />
+                        </button>
+                      </span>
+                    </p>
+                    <div>₹{(item.variant[0]?.price * item.quantity).toFixed(2)}</div>
+                    <div style={{ marginTop: "2%", display: "flex", justifyContent: "space-between" }}>
+                      <div className="item-count">
+                        <p className="item-box">
+                          <button
+                            style={{ border: "none", backgroundColor: "white" }}
+                            onClick={() => handleDecrement(item._id)}
+                          >
+                            <img src="images/minus.png" alt="Decrease" />
+                          </button>
+                        </p>
+                        <p className="item-box" style={{ fontSize: "20px" }}>
+                          {item.quantity}
+                        </p>
+                        <p className="item-box">
+                          <button
+                            style={{ border: "none", backgroundColor: "white" }}
+                            onClick={() => handleIncrement(item._id)}
+                          >
+                            <img src="images/plus.png" alt="Increase" />
+                          </button>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                ))
+              )}
+            </div>
+
+
+
+              {/*  <div style={{ display:"flex", padding:"2%"}}><div>
                   <div><img src="images/cart1.png" alt="" /></div><div>(Bottle of 1)</div></div>
                   <div style={{display:"block", width:"100%", padding:"1%", paddingLeft:"3%"}}>
                         <p style={{ display:"flex",justifyContent: "space-between", margin:"0px"}}><p style={{margin:"0px", fontWeight:"500"}}>Aveeno Baby Daily Moisture Wash & Shampoo, 354 ml </p> <span>
-                        <img src="images/cross.png" alt="" /></span></p>
+                        <button style={{border:"none", backgroundColor:"white"}}>
+                        <img src="images/cross.png" alt="" /></button></span></p>
                         <div className="cart-discount">14% Off</div>
                         <div style={{marginTop:"2%" , display:"flex",justifyContent: "space-between"}}>
                             <div className="item-count">
@@ -100,7 +200,8 @@ function Cart(){
                   <div><img src="images/cart2.png" alt="" /></div><div>(Strip of 20)</div></div>
                   <div style={{display:"block", width:"100%", padding:"1%", paddingLeft:"3%"}}>
                         <p style={{ display:"flex",justifyContent: "space-between", margin:"0px"}}><p style={{margin:"0px", fontWeight:"500"}}>Evion 400 Capsule 20's</p> <span>
-                        <img src="images/cross.png" alt="" /></span></p>
+                        <button style={{border:"none", backgroundColor:"white"}}>
+                        <img src="images/cross.png" alt="" /></button></span></p>
                         <div className="cart-discount">5% Off</div>
                         <div style={{marginTop:"2%" , display:"flex",justifyContent: "space-between"}}>
                             <div className="item-count">
@@ -115,6 +216,7 @@ function Cart(){
                   </div>
                 </div>
                 <p className="coupon-apply" >Coupon savings: ₹4.33</p>
+                */}
 
 
             </div>
@@ -197,8 +299,8 @@ function Cart(){
                   <img src="images/coupon.png" alt="" /> 'PHARMA5' Applied
                   </div> 
                   <p style={{ display:"flex",justifyContent: "space-evenly", width:"30%", padding:"0% 3%", margin:"0px", alignItems:"center", borderLeft:"1px solid rgba(0, 0, 0, 0.15)"}}><p style={{margin:"0px", fontWeight:"500"}}>₹4.33
-                  saved</p> <span>
-                  <img src="images/cross-g.png" alt="" /></span></p>        
+                  saved</p> <span><button style={{border:"none", backgroundColor:"white"}}>
+                  <img src="images/cross-g.png" alt="" /></button></span></p>        
                 </div>
             </div>
 
