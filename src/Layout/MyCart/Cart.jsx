@@ -46,7 +46,11 @@ const SamplePrevArrow = (props) => {
 function Cart(){
 
   const [cart, setCart] = useState([]);
-
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [totalDiscount, setTotalDiscount] = useState(0);
+  const [deliveryCharges, setDeliveryCharges] = useState(99); 
+  const [finalAmount, setFinalAmount] = useState(0);
+  
   useEffect(() => {
     const savedCart = JSON.parse(localStorage.getItem("cart"));
     if (savedCart) {
@@ -54,6 +58,28 @@ function Cart(){
     }
   }, []);
 
+  useEffect(() => {
+    let total = 0;
+    let discount = 0;
+
+    cart.forEach((item) => {
+      const itemPrice = item.variant[0]?.price * item.quantity;
+      const itemDiscount = item.variant[0]?.discount * item.quantity || 0;
+
+      total += itemPrice;
+      discount += itemDiscount;
+    });
+
+    const discountedPrice = total - discount;
+    const finalAmount = discountedPrice ; 
+
+    setTotalPrice(total);
+    setTotalDiscount(discount);
+    setFinalAmount(finalAmount);
+  }, [cart]);
+
+
+  
   useEffect(() => {
     console.log("Cart Products: ", cart);
   }, [cart]);
@@ -308,28 +334,49 @@ function Cart(){
                   <div style={{display:"flex" ,justifyContent:"space-between", width:"100%",padding:"6% 0%"}}>  
                     <div style={{width:"100%"}}>
                     <h5>CART BREAKDOWN</h5>
-                    <div style={{marginTop:"6.2%" ,padding:"5%", border:"1px solid rgba(0, 0, 0, 0.15)", width:"100%"}}>
+                    {/* <div style={{marginTop:"6.2%" ,padding:"5%", border:"1px solid rgba(0, 0, 0, 0.15)", width:"100%"}}>
                       <div style={{ borderBottom:"1px solid rgba(0, 0, 0, 0.15)"}}>
                       <p className="cart-breakdown">Cart Total<span>₹1056.6</span></p>
                       <p className="cart-breakdown">Discount on MRP<span>- ₹136</span></p>
                       <div className="cart-breakdown"> Delivery Charges<p><strike>₹99</strike><span style={{color:"rgba(48, 176, 155, 1)"}}> FREE</span></p></div>
                       </div>
                       <p className="cart-breakdown" style={{paddingTop:"10%", fontWeight:"500"}}>To Pay<span>₹922.27</span></p>
+                    </div> */}
+
+                    
+                    <div style={{marginTop:"6.2%" ,padding:"5%", border:"1px solid rgba(0, 0, 0, 0.15)", width:"100%"}}>
+                                <div  className="cart-breakdown p-3">
+                                  <p style={{ fontSize: "16px"}}>Total Price</p>
+                                  <p >₹{totalPrice.toFixed(2)}</p>
+                                </div>
+                                <div className="cart-breakdown p-3">
+                                  <p style={{ fontSize: "16px"}}>Discount on MRP</p>
+                                  <p >-₹{totalDiscount.toFixed(2)}</p>
+                                </div>
+                                <div className="cart-breakdown p-3">
+                                  <p style={{ fontSize: "16px"}}>Delivery Charges</p>
+                                  <strike>₹99</strike> <span style={{ color: "rgba(48, 176, 155, 1)" }}>FREE</span>                                </div>
+                                <div className="cart-breakdown p-3">
+                                  <p style={{ fontSize: "16px", fontWeight: "500" }}>Final Amount</p>
+                                  <p style={{ fontWeight: "500", fontSize: "18px" }}>₹{finalAmount.toFixed(2)}</p>
+                                </div>
                     </div>
+
+
                     <div style={{marginTop:"6.2%" , border:"1px solid rgba(0, 0, 0, 0.15)", width:"100%"}}>
                       <div>
-                      <p className="saved-header">You saved ₹235 on this order</p>
+                      <p className="saved-header">You saved ₹{(totalDiscount + 99).toFixed(2)} on this order</p>
                       </div>
                       <div style={{padding:"1% 5%"}}>
                       <p className="cart-breakdown">Savings</p>
-                      <p className="cart-breakdown" >Discount On MRP<span style={{color:"rgba(4, 94, 85, 1)"}}>₹136</span></p>
+                      <p className="cart-breakdown" >Discount On MRP<span style={{color:"rgba(4, 94, 85, 1)"}}>₹{totalDiscount.toFixed(2)}</span></p>
                       <p className="cart-breakdown" >Free Delivery<span style={{color:"rgba(4, 94, 85, 1)"}}>₹99</span></p>
                      </div>
                     </div>
                     <div style={{marginTop:"6.2%", padding:"7% 5%" ,border:"1px solid rgba(0, 0, 0, 0.15)"}}>
                     <div style={{display:"flex" ,justifyContent:"space-between", width:"100%",padding:"3% 2%", alignItems:"center"}}>  
                     <div style={{fontSize:"100%" ,fontWeight:"600"}}>
-                    Amount to Pay <p style={{color:"rgba(48, 176, 155, 1)", margin:"0"}}>₹922.27</p>
+                    Amount to Pay <p style={{color:"rgba(48, 176, 155, 1)", margin:"0"}}>₹{finalAmount.toFixed(2)}</p>
                     </div> 
                       <button style={{border:"none", borderRadius:"10px", height:"30px" , backgroundColor:"rgba(48, 176, 155, 1)"}}><p className='button-txt'> <a href='Cart' style={{textDecoration:"none", color:"rgba(255, 255, 255, 1)"}}>ADD ADDRESS</a></p></button>
                     </div>
